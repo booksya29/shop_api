@@ -23,3 +23,22 @@ def view_all_products(conn):
         'status':200,
         "items": cursor.fetchall()
     }
+
+
+def update_product_info(conn, barcode:str, data:Product):
+    cursor = conn.cursor(cursor_factory = RealDictCursor)
+    cursor.execute("SELECT * FROM products WHERE barcode = %s", (barcode,))
+    old = cursor.fetchone()
+    if not old:
+        raise HTTPException(status_code=404, detail="Product not found")
+    new = data.model_dump()
+    updated = {key:value if value is not None else old[key] for key, value in new.items()}
+    print(updated)
+    np = Product(**updated)
+    cursor.execute("UPDATE products SET user_id = %s, name = %s, price = %s, count = %s, description = %s WHERE barcode = %s", (np.user_id, np.name, np.price, np.count, np.description, np.barcode))
+    conn.commit()
+    return {
+        "status" : 202,
+        "message" : "Update product",
+        "Product":updated
+    }
