@@ -1,6 +1,6 @@
 from schemes import NewUser, EditUser, User
-from fastapi import HTTPException
-
+from fastapi import HTTPException, status
+from psycopg2.extras import RealDictCursor
 class UsersDatabase:
     @staticmethod
     def add_new_user(conn, data:NewUser):
@@ -34,4 +34,16 @@ class UsersDatabase:
             'status': 200,
             "detail": "Succefull edit",
             'user': new_user.model_dump()
+        }
+    @staticmethod
+    def delete_user(conn, user_id):
+        cursor = conn.cursor(cursor_factory = RealDictCursor)
+        cursor.execute('DELETE FROM USERS WHERE id = %s RETURNING *', (user_id,))
+        deleted_data = cursor.fetchone()
+        if not deleted_data:
+            raise HTTPException(status_code=404, detail="User not found")
+        return {
+            'status': status.HTTP_202_ACCEPTED,
+            'message': "Succefull deleted",
+            'user':deleted_data
         }

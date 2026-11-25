@@ -15,3 +15,8 @@ def edit_user_info(request:Request, data:EditUser, user_id:int):
     data.id = user_id
     conn = request.app.state.conn
     return UsersDatabase.update_user_info(conn, data)
+
+@router.delete('/{user_id}', status_code=202)
+def delete_user(request:Request, user_id):
+    conn = request.app.state.conn
+    return UsersDatabase.delete_user(conn, user_id)
