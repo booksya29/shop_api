@@ -19,7 +19,7 @@ def add_new_transaction(conn, data:AddTrascationModel):
     UsersDatabase.update_user_info(conn, EditUser(id=data.buyer_id,budget=new_user_budget))
     update_product_info(conn, data.product_id, Product(count=new_product_count))
     cursor.execute("INSERT INTO transactions(buyer_id, product_barcode, price, b_change, count, date) VALUES (%s,%s,%s,%s,%s,%s) RETURNING *", (data.buyer_id, data.product_id, product_price, float(data.count) * float(product_price), data.count, time()))
-    added_data = cursor.fetchone()[0]
+    added_data = cursor.fetchone()
     conn.commit()
     cursor.close()
     return {
