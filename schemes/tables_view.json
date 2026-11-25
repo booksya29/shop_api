@@ -1,0 +1,8 @@
+[
+    {
+        "users":"(id, name, born_year, budget)"
+    },
+    {
+        "products":"(id, barcode, user_id, name, price, count, description)"
+    }
+]

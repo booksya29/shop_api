@@ -39,6 +39,7 @@ class UsersDatabase:
     def delete_user(conn, user_id):
         cursor = conn.cursor(cursor_factory = RealDictCursor)
         cursor.execute('DELETE FROM USERS WHERE id = %s RETURNING *', (user_id,))
+        conn.commit()
         deleted_data = cursor.fetchone()
         if not deleted_data:
             raise HTTPException(status_code=404, detail="User not found")
