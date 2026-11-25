@@ -7,10 +7,12 @@ class UsersDatabase:
         cursor = conn.cursor()
         cursor.execute("SELECT EXISTS(SELECT 1 FROM users WHERE name = %s)", (data.name,))
         if cursor.fetchone()[0]:
+            cursor.close()
             raise HTTPException(status_code = 409, detail="User already exists")
         else:
             cursor.execute("INSERT INTO users(name, born_year, budget) VALUES(%s, %s, %s)", (data.name, data.born_year, data.budget))
             conn.commit()
+        cursor.close()
         return {
             "status":"Success",
             "message":"User successfully added",
@@ -30,6 +32,7 @@ class UsersDatabase:
         new_user = User(**updated_data)
         cursor.execute("UPDATE users SET name = %s, born_year = %s, budget = %s WHERE id = %s", (new_user.name, new_user.born_year, new_user.budget, new_user.id))
         conn.commit()
+        cursor.close()
         return {
             'status': 200,
             "detail": "Succefull edit",
@@ -41,8 +44,10 @@ class UsersDatabase:
         cursor.execute('DELETE FROM USERS WHERE id = %s RETURNING *', (user_id,))
         conn.commit()
         deleted_data = cursor.fetchone()
+        cursor.close()
         if not deleted_data:
             raise HTTPException(status_code=404, detail="User not found")
+        
         return {
             'status': status.HTTP_202_ACCEPTED,
             'message': "Succefull deleted",

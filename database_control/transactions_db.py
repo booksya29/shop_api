@@ -31,6 +31,8 @@ def add_new_transaction(conn, data:AddTrascationModel):
 def get_list_of_transactions(conn, buyer_id:int):
     cursor = conn.cursor(cursor_factory = RealDictCursor)
     cursor.execute("SELECT users.name AS user_name, products.name, transactions.b_change, transactions.date FROM transactions INNER JOIN users ON users.id = transactions.buyer_id INNER JOIN products ON products.barcode = transactions.product_barcode WHERE (%s = 0 OR transactions.buyer_id = %s)", (buyer_id, buyer_id))
+    conn.commit()
+    cursor.close()
     return {
         "status": 200,
         "history": cursor.fetchall()
