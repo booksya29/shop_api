@@ -1,4 +1,5 @@
 from fastapi import status, HTTPException
+from psycopg2.extras import RealDictCursor
 from schemes import Product
 
 def add_new_products(conn, data:Product):
@@ -13,4 +14,12 @@ def add_new_products(conn, data:Product):
         'status':status.HTTP_201_CREATED,
         'message':"Successful created",
         'product':data.model_dump()
+    }
+
+def view_all_products(conn):
+    cursor = conn.cursor(cursor_factory = RealDictCursor)
+    cursor.execute("SELECT * FROM products")
+    return {
+        'status':200,
+        "items": cursor.fetchall()
     }
