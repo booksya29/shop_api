@@ -1,6 +1,7 @@
 from schemes import Transaction, AddTrascationModel
 from fastapi import status, HTTPException
 from schemes import EditUser
+from psycopg2.extras import RealDictCursor
 from database_control import update_product_info, UsersDatabase, Product
 from time import time
 
@@ -25,4 +26,12 @@ def add_new_transaction(conn, data:AddTrascationModel):
     return {
         "status":200,
         'transaction':added_data
+    }
+
+def get_list_of_transactions(conn, buyer_id:int):
+    cursor = conn.cursor(cursor_factory = RealDictCursor)
+    cursor.execute("SELECT users.name AS user_name, products.name, transactions.b_change, transactions.date FROM transactions INNER JOIN users ON users.id = transactions.buyer_id INNER JOIN products ON products.barcode = transactions.product_barcode WHERE (%s = 0 OR transactions.buyer_id = %s)", (buyer_id, buyer_id))
+    return {
+        "status": 200,
+        "history": cursor.fetchall()
     }
