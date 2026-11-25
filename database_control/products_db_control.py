@@ -42,3 +42,18 @@ def update_product_info(conn, barcode:str, data:Product):
         "message" : "Update product",
         "Product":updated
     }
+
+def delete_product(conn, barcode):
+    cursor = conn.cursor(cursor_factory = RealDictCursor)
+    cursor.execute("DELETE FROM products WHERE barcode = %s RETURNING *", (barcode,))
+    deleted_data = cursor.fetchone()
+    print(deleted_data)
+    if not deleted_data:
+        raise HTTPException(status_code=404, detail="Product not found")
+    conn.commit()
+    return {
+        "status":200,
+        "message":"successfully deleted",
+        "product": deleted_data
+    }
+    

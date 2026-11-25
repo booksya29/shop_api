@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Request
 from schemes import Product
-from database_control import add_new_products, view_all_products, update_product_info
+from database_control import add_new_products, view_all_products, update_product_info, delete_product
 router = APIRouter(prefix="")
 
 
@@ -18,3 +18,8 @@ def view(request:Request):
 def patch_product(request:Request, barcode:str, data:Product):
     conn = request.app.state.conn
     return update_product_info(conn, barcode, data)
+
+@router.delete(path ="/{barcode}", status_code=200, tags=['products'])
+def delete(request:Request, barcode:str):
+    conn = request.app.state.conn
+    return delete_product(conn, barcode)
