@@ -8,7 +8,7 @@ def add_new_product(request:Request, data:AddTrascationModel):
     conn = request.app.state.conn
     return add_new_transaction(conn, data)
 
-@router.get("/show")
+@router.get("/show", status_code=200, tags=["transactions"])
 def show_transactions(request:Request, buyer_id:int = 0):
     conn = request.app.state.conn 
     return get_list_of_transactions(conn, buyer_id)

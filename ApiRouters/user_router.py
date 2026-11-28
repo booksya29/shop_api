@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Request, status, HTTPException
 from database_control import UsersDatabase 
 from schemes import NewUser, EditUser
+from psycopg2.extras import RealDictCursor
 router = APIRouter()
 
 
@@ -20,3 +21,14 @@ def edit_user_info(request:Request, data:EditUser, user_id:int):
 def delete_user(request:Request, user_id):
     conn = request.app.state.conn
     return UsersDatabase.delete_user(conn, user_id)
+
+
+@router.get("", status_code=200, tags=["Users"])
+def check_db_state(request:Request, user_id:int = 0):
+
+    cursor = request.app.state.conn.cursor(cursor_factory = RealDictCursor)
+    cursor.execute("SELECT * FROM users WHERE (0 = %s OR id = %s)", (user_id, user_id))
+    data = cursor.fetchall()
+    return data
+
+

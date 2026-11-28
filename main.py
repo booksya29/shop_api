@@ -16,12 +16,7 @@ app = FastAPI(lifespan=lifespan)
 app.include_router(user_router.router, prefix = "/user")
 app.include_router(products_router.router, prefix= '/products')
 app.include_router(transactions_router.router, prefix="/transactions")
+
 @app.get("/")
-def check_db_state(request:Request):
-
-    cursor = request.app.state.conn.cursor()
-    cursor.execute("SELECT * FROM users")
-    data = cursor.fetchall()
-    return data
-
-
+def standart():
+    return "https://github.com/booksya29/shop_api"
